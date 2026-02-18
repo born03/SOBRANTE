@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etiquetas Verticales (Lab Grande)</title>
+    <style>
+        /* ESTILOS GENERALES */
+        :root { --primary: #2c3e50; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        /* --- PANEL DE CONTROL --- */
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+            border-top: 5px solid #0056b3;
+        }
+        .fila-input { margin-bottom: 10px; }
+        label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        .botones { display: flex; gap: 10px; margin-top: 15px; }
+        button { flex: 1; padding: 10px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; }
+        .btn-add { background: #28a745; }
+        .btn-cls { background: #dc3545; }
+        .btn-prt { background: #007bff; }
+
+        /* --- HOJA DE IMPRESIÓN (VERTICAL TIRA) --- */
+        #hoja {
+            background: white;
+            /* Ancho ajustado para una columna */
+            width: auto; 
+            min-height: 20cm;
+            padding: 0.5cm;
+            
+            /* FORMATO VERTICAL */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2mm; /* Espacio entre etiquetas para meter tijera */
+        }
+
+        /* --- ETIQUETA --- */
+        .etiqueta {
+            width: 4cm;
+            height: 2cm;
+            border: 1.5px solid #000;
+            border-radius: 4px;
+            background: white;
+            box-sizing: border-box;
+            padding: 2px 3px;
+            
+            font-family: 'Arial Narrow', sans-serif;
+            font-size: 6pt; 
+            color: #000;
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            page-break-inside: avoid; /* No partir etiquetas */
+        }
+
+        .linea-nombre {
+            font-weight: 900;
+            font-size: 8pt;
+            border-bottom: 1px solid #000;
+            margin-bottom: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+        }
+
+        .linea-dosis { font-size: 6pt; margin-bottom: 1px; }
+
+        .bloque-fechas { display: flex; flex-direction: column; gap: 2px; }
+        
+        .fila-fecha {
+            display: flex;
+            justify-content: space-between;
+            white-space: nowrap;
+            font-size: 6.5pt;
+        }
+
+        .txt-abierto { font-weight: bold; }
+        
+        .box-caducidad {
+            background-color: #ffe6e6; 
+            color: #d32f2f;            
+            font-weight: bold;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        /* FOOTER AJUSTADO */
+        .footer {
+            border-top: 1px dotted #999;
+            padding-top: 2px;
+            margin-top: 1px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f8f8;
+        }
+        
+        /* LABORATORIO MÁS GRANDE */
+        .lab { 
+            font-weight: 900; /* Extra Negrita */
+            font-size: 7pt;   /* Letra más grande */
+            text-transform: uppercase; 
+            color: #000;
+        }
+        
+        .alertas { 
+            font-weight: bold; 
+            text-align: right; 
+            font-size: 5pt; /* Alertas un poco más chicas para dar espacio al Lab */
+        }
+
+        @media print {
+            body { background: white; margin: 0; padding: 0; }
+            .panel { display: none; }
+            #hoja { width: 100%; margin: 0; padding: 0.5cm; box-shadow: none; }
+            .etiqueta { border: 1.5px solid #000 !important; -webkit-print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="panel">
+        <h2 style="margin-top:0;">💊 Generador Vertical</h2>
+        
+        <div class="fila-input">
+            <label>Medicamento:</label>
+            <input list="listado" id="inp-med" placeholder="Escribe y presiona Enter..." autofocus>
+            <datalist id="listado"></datalist>
+        </div>
+
+        <div class="fila-input">
+            <label>Laboratorio (Opcional):</label>
+            <input type="text" id="inp-lab" placeholder="Ej. PISA">
+        </div>
+
+        <div class="botones">
+            <button class="btn-add" onclick="agregar()">➕ AGREGAR (Enter)</button>
+            <button class="btn-cls" onclick="limpiar()">🗑️ BORRAR TODO</button>
+            <button class="btn-prt" onclick="window.print()">🖨️ IMPRIMIR</button>
+        </div>
+        <p style="font-size:12px; color:#666; text-align:center;">
+            * Los números del nombre se eliminan automáticamente (Ej. AMIKACINA 500 -> AMIKACINA).
+        </p>
+    </div>
+
+    <div id="hoja"></div>
+
+    <script>
+        const meds = [
+            {n: "AC. FOLINICO", p: "50 MG / 4 ML", d: 1, l: "SI", t: "REFRIGERESE"},
+            {n: "AC. FOLINICO 15", p: "15 MG / 5 ML", d: 1, l: "SI", t: "REFRIGERESE"},
+            {n: "AC. VALPROICO", p: "500 MG / 5 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
+            {n: "ACICLOVIR", p: "250 MG / 10 ML", d: 0.5, l: "SI", t: "T. AMBIENTE"},
+            {n: "ALBUMINA", p: "12.5 G / 50 ML", d: 1, l: "SI", t: "REFRIGERESE"},
+            {n: "ALBUMINA 20%", p: "10 G / 50 ML", d: 1, l: "SI", t: "REFRIGERESE"},
+            {n: "AMIKACINA 100", p: "100 MG / 2 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
+            {n: "AMIKACINA 500", p: "500 MG / 2 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
+            {n: "AMPICILINA 500", p: "500 MG / 5 ML", d: 0.5, l: "SI", t: "REFRIGERESE"},
+            {n: "ANFOTERICINA B C", p: "50 MG / 10 ML", d: 7, l: "SI", t: "REFRIGERESE"},
+            {n: "ANFOTERICINA B L", p: "50 MG / 10 ML", d: 2, l: "SI", t: "REFRIGERESE"},
+            {n: "BUMETANIDA", p: "0.5 MG / 2 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
+            {n: "BUPRENORFINA", p: "300 MCG/ 1 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
+            {n: "BUTILHIOSCINA", p: "20 MG / 1 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
+            {n: "CAFEINA CITRATO", p: "20 MG / ML", d: 1, l: "NO", t: "T. AMBIENTE"},
+            {n: "CASPOFUNGINA", p: "50 MG / 10 ML", d: 2, l: "SI", t: "REFRIGERESE"},
+            {n: "CEFALOTINA", p: "1G /10 ML", d: 2, l: "SI", t: "REFRIGERESE"},
+            {n: "CEFEPIMA", p: "1G /10 ML", d: 7, l: "SI", t: "REFRIGERESE"},
+            {n: "CEFOTAXIMA", p: "1G /4 ML", d: 7, l: "SI", t: "REFRIGERESE"},
+            {n: "CEFTAZIDIMA", p: "1G /10 ML", d: 7, l: "SI", t: "REFRIGERESE"},
+            {n: "CEFTRIAXONA", p: "1G /10 ML", d: 3, l: "SI", t: "REFRIGERESE"},
+            {n: "CEFUROXIMA", p: "750 MG / 5 ML", d: 2, l: "SI", t: "REFRIGERESE"},
+            {n: "CIPROFLOXACINO", p: "200 MG / 100 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
+            {n: "CLARITROMICINA", p: "500 MG / 10 ML", d: 2, l: "SI", t: "REFRIGERESE"},
+            {n: "CLINDAMICINA", p: "300 MG / 2 ML", d: 2, l: "NO", t: "T. AMBIENTE"},
+            {n: "CLOROPIRAMINA", p: "20 MG /2 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
+            {n: "COLISTIMETATO", p: "150 MG / 5 ML", d: 7, l: "SI", t: "REFRIGERESE"},
+            {n: "DEXAMETASONA", p: "8 MG / 2ML", d: 7, l: "SI", t: "T. AMBIENTE"},
+            {n: "DEXAMETASONA DEPOT", p: "8 MG / 2ML", d: 1, l: "SI", t: "T. AMBIENTE"},
+            {n: "DEXMEDETOMIDINA", p: "200 MCG/2 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
+            {n: "DICLOFENACO", p: "75 MG / 3 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
+            {n: "DIFENHIDRAMINA", p: "100 MG / 10 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
+            {n: "DIFENIDOL", p: "40 MG /2 ML", d: 2, l: "SI", t: "T. AMBIENTE"},
+            {n: "ENOXAPARINA", p: "40 MG / 0.4 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
+            {n: "ERITROPOYETINA 2K", p: "4000 U / 1ML", d: 1, l: "NO", t: "REFRIGERESE"},
+            {n: "ERITROPOYETINA 4K", p: "4000 U / 1ML", d: 1, l: "NO", t: "REFRIGERESE"},
+            {n: "ETAMSILATO", p: "250 MG /2 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
+            {n: "FENITOINA", p: "250 MG / 5 ML", d: 7, l: "SI", t: "T. AMBIENTE"},
+            {n: "FILGRASTIM", p: "300 MCG / 1 ML", d: 1, l: "SI", t: "REFRIGERESE"},
+            {n: "FITOMENADIONA", p: "10 MG / 1 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
+            {n: "FLUCONAZOL", p: "100 MG / 50 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
+            {n: "FOSAPREPITANT", p: "150 MG / 5 ML", d: 1, l: "NO", t: "REFRIGERESE"},
+            {n: "FOSFOMICINA", p: "1G / 10 ML", d: 7, l: "SI", t: "REFRIGERESE"},
+            {n: "FUROSEMIDA", p: "20 MG / 2 ML", d: 5, l: "SI", t: "T. AMBIENTE"},
+            {n: "GANCICLOVIR", p: "500 MG / 10 ML", d: 0.5, l: "SI", t: "T. AMBIENTE"},
+            {n: "GENTAMICINA 160", p: "160 MG / 2 ML", d: 5, l: "NO", t: "T. AMBIENTE"},
+            {n: "GENTAMICINA 20", p: "20 MG / 2 ML", d: 5, l: "NO", t: "T. AMBIENTE"},
+            {n: "GENTAMICINA 80", p: "80 MG / 2 ML", d: 5, l: "NO", t: "T. AMBIENTE"},
+            {n: "HEPARINA", p: "1000 UI / ML", d: 7, l: "NO", t: "REFRIGERESE"},
+            {n: "HIDRALAZINA", p: "20 MG / 1 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
+            {n: "HIDROCORTISONA", p: "100 MG / 5 ML", d: 3, l: "NO", t: "T. AMBIENTE"},
+            {n: "KETOROLACO", p: "30 MG / 1 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
+            {n: "IBUPROFENO", p: "600 MG / 100 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
+            {n: "LEVETIRACETAM", p: "500 MG / 5 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
+            {n: "LEVOFLOXACINO", p: "500 MG / 100 ML", d: 7, l: "NO", t: "REFRI (72H T.AMB)"},
+            {n: "LINEZOLID", p: "600 MG / 300 ML", d: 7, l: "SI", t: "REFRI O T.AMB"},
+            {n: "MEROPENEM", p: "1 G / 20 ML", d: 2, l: "SI", t: "REFRIGERESE"},
+            {n: "METAMIZOL", p: "1 G / 2 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
+            {n: "METILPREDNISOLONA", p: "500 MG / 10 ML", d: 2, l: "SI", t: "REFRIGERESE"},
+            {n: "METILPRED. 1PULSO", p: "500 MG / 10 ML", d: 2, l: "SI", t: "REFRIGERESE"},
+            {n: "METOCLOPRAMIDA", p: "10 MG / 2 ML", d: 5, l: "SI", t: "T. AMBIENTE"},
+            {n: "METRONIDAZOL", p: "500 MG / 100 ML", d: 5, l: "NO", t: "T. AMBIENTE"},
+            {n: "METRONIDAZOL 200", p: "200 MG / 10 ML", d: 5, l: "SI", t: "T. AMBIENTE"},
+            {n: "OCTREOTIDA", p: "1 MG / 5 ML", d: 4, l: "SI", t: "REFRIGERESE"},
+            {n: "OMEPRAZOL", p: "40 MG / 10 ML", d: 0.166, l: "SI", t: "VER ANEXO"},
+            {n: "ONDANSETRON", p: "8 MG / 4 ML", d: 7, l: "SI", t: "T. AMBIENTE"},
+            {n: "PARACETAMOL", p: "1G / 100 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
+            {n: "PIPERACILINA", p: "4 G / 20 ML", d: 2, l: "NO", t: "REFRIGERESE"},
+            {n: "TEICOPLANINA", p: "200 MG / 5 ML", d: 7, l: "NO", t: "REFRIGERESE"},
+            {n: "TIAMINA", p: "500 MG/ 5 ML", d: 1, l: "SI", t: "REFRIGERESE"},
+            {n: "TIGECICLINA", p: "50 MG / 5 ML", d: 2, l: "SI", t: "REFRIGERESE"},
+            {n: "TRAMADOL", p: "100 MG / 2 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
+            {n: "TRIMETOPRIM", p: "160 MG / 3 ML", d: 3, l: "SI", t: "T. AMBIENTE"},
+            {n: "VANCOMICINA", p: "500 MG / 10 ML", d: 7, l: "SI", t: "REFRIGERESE"},
+            {n: "VORICONAZOL", p: "200 MG / 20 ML", d: 1, l: "SI", t: "REFRIGERESE"}
+        ];
+
+        const dl = document.getElementById("listado");
+        meds.forEach(m => {
+            const op = document.createElement("option");
+            op.value = m.n;
+            dl.appendChild(op);
+        });
+
+        document.getElementById("inp-med").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") { event.preventDefault(); agregar(); }
+        });
+        document.getElementById("inp-lab").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") { event.preventDefault(); agregar(); }
+        });
+
+        function fmt(f) {
+            const d = String(f.getDate()).padStart(2,'0');
+            const m = String(f.getMonth()+1).padStart(2,'0');
+            const a = f.getFullYear();
+            return `${d}/${m}/${a}`;
+        }
+
+        function limpiar() { document.getElementById("hoja").innerHTML = ""; }
+
+        function agregar() {
+            const inpMed = document.getElementById("inp-med");
+            const nom = inpMed.value;
+            const lab = document.getElementById("inp-lab").value;
+            const med = meds.find(m => m.n === nom);
+
+            if(!med) { alert("⚠️ Elige un medicamento válido."); return; }
+
+            const hoy = new Date();
+            const cad = new Date(hoy.getTime() + (med.d * 86400000));
+
+            // Lógica
+            let luz = med.l === "SI" ? "🚫 FOTOSENSIBLE" : "";
+            let temp = med.t.includes("REFRI") ? "❄️ REFRI" : "🌡️ AMBIENTE";
+
+            // Limpieza de nombre (Quita números al final)
+            let nombreLimpio = med.n.replace(/\s\d+.*$/, '').trim();
+
+            const div = document.createElement("div");
+            div.className = "etiqueta";
+            div.innerHTML = `
+                <div class="linea-nombre">${nombreLimpio}</div>
+                <div class="linea-dosis">📦 ${med.p}</div>
+                
+                <div class="bloque-fechas">
+                    <div class="fila-fecha">
+                        <span class="txt-abierto">ABIERTO:</span>
+                        <span>${fmt(hoy)}</span>
+                    </div>
+                    <div class="fila-fecha box-caducidad">
+                        <span>CADUCIDAD:</span>
+                        <span>${fmt(cad)}</span>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <span class="lab">🏭 ${lab ? lab.toUpperCase().substring(0,10) : ""}</span>
+                    <span class="alertas">${temp} ${luz}</span>
+                </div>
+            `;
+            document.getElementById("hoja").appendChild(div);
+
+            inpMed.value = ""; 
+            inpMed.focus();    
+        }
+    </script>
+</body>
+</html>
