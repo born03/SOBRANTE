@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etiquetas Perfectas (No se cortan)</title>
+    <title>Etiquetas (Ajuste Jeringa 5cc)</title>
     <style>
         /* ESTILOS GENERALES */
         :root { --primary: #2c3e50; }
@@ -17,7 +17,7 @@
             margin: 0;
         }
 
-        /* --- PANEL DE CONTROL --- */
+        /* --- PANEL DE CONTROL (NO SE IMPRIME) --- */
         .panel {
             background: white;
             padding: 20px;
@@ -38,7 +38,7 @@
         .btn-cls { background: #dc3545; }
         .btn-prt { background: #007bff; }
 
-        /* --- HOJA DE IMPRESIÓN (VERTICAL TIRA) --- */
+        /* --- HOJA DE IMPRESIÓN --- */
         #hoja {
             background: white;
             width: auto; 
@@ -47,63 +47,59 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            gap: 2mm; 
+            gap: 3mm; /* Espacio para meter tijera */
         }
 
-        /* --- ETIQUETA --- */
+        /* --- DISEÑO ANTI-CORTES (JERINGA 5CC) --- */
         .etiqueta {
             width: 4cm;
-            height: 2cm;
+            min-height: 2cm; /* LA CLAVE: Si necesita más espacio, crecerá, NUNCA ocultará datos */
             border: 1.5px solid #000;
             border-radius: 4px;
             background: white;
             box-sizing: border-box;
-            padding: 2px 3px;
+            padding: 2px 4px;
             
-            font-family: 'Arial Narrow', sans-serif;
+            font-family: 'Arial Narrow', Arial, sans-serif; /* Letra comprimida */
             color: #000;
             
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
+            gap: 1.5px; /* Espaciado uniforme */
             page-break-inside: avoid;
         }
 
-        /* EL CANDADO MÁGICO: PROHÍBE QUE LAS CAJAS SE ENCOJAN A CERO */
-        .etiqueta > div {
-            flex-shrink: 0; 
-        }
-
-        .linea-nombre {
+        .nombre {
             font-weight: 900;
-            font-size: 8pt;
-            border-bottom: 1px solid #000;
-            margin-bottom: 1px;
+            font-size: 8.5pt;
             text-align: center;
             text-transform: uppercase;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis; /* Si de milagro el nombre es larguísimo, le pone ... pero NO se desaparece */
+            border-bottom: 1px solid #000;
+            padding-bottom: 1px;
+            line-height: 1.1;
         }
 
-        .linea-dosis { 
-            font-size: 5.5pt; 
-            margin-bottom: 1px; 
-            white-space: nowrap;
+        .dosis {
+            font-size: 6pt;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1;
         }
 
-        .bloque-fechas { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 1px;
-            margin-bottom: auto; /* Empuja el footer hacia abajo si hay espacio extra */
+        .fechas {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5px;
+            margin: 1.5px 0;
         }
-        
+
         .fila-fecha {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 6pt;
+            font-size: 6.5pt;
+            line-height: 1.1;
         }
 
         .txt-abierto { font-weight: bold; }
@@ -111,37 +107,28 @@
         .box-caducidad {
             background-color: #ffe6e6; 
             color: #d32f2f;            
-            font-weight: bold;
             padding: 0 2px;
             border-radius: 2px;
+            font-weight: bold;
         }
 
-        .footer {
-            border-top: 1px dotted #999;
-            padding-top: 1px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end; /* Alinea el texto a la base */
-            background: #f8f8f8;
-        }
-        
-        .lab { 
-            font-weight: 900; 
-            font-size: 6.5pt;  
-            text-transform: uppercase; 
-            color: #000;
-            max-width: 50%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis; /* Para que quepa FARMADEXTRUM y no aplaste a las alertas */
-        }
-        
-        .alertas { 
-            font-weight: bold; 
-            text-align: right; 
-            font-size: 4.5pt; 
+        .lab {
+            font-weight: 900;
+            font-size: 7.5pt; /* LABORATORIO GRANDE */
+            text-align: center;
+            text-transform: uppercase;
+            border-top: 1px dotted #999; /* Separador visual */
+            padding-top: 2px;
             line-height: 1;
-            max-width: 50%;
+        }
+
+        .alertas {
+            font-size: 5pt;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            line-height: 1;
         }
 
         @media print {
@@ -155,7 +142,7 @@
 <body>
 
     <div class="panel">
-        <h2 style="margin-top:0;">💊 Generador Vertical (Cero Errores)</h2>
+        <h2 style="margin-top:0;">💉 Etiquetas Exactas (5cc)</h2>
         
         <div class="fila-input">
             <label>Medicamento:</label>
@@ -290,20 +277,20 @@
             const hoy = new Date();
             const cad = new Date(hoy.getTime() + (med.d * 86400000));
 
-            // Divs separados para que se acomoden bien uno debajo de otro si es necesario
-            let luz = med.l === "SI" ? "<div>🚫 FOTOSENSIBLE</div>" : "";
-            let temp = med.t.includes("REFRI") ? "<div>❄️ REFRI</div>" : "<div>🌡️ AMBIENTE</div>";
+            // Mantiene el texto que solicitaste
+            let luz = med.l === "SI" ? "<span>🚫 FOTOSENSIBLE</span>" : "";
+            let temp = med.t.includes("REFRI") ? "<span>❄️ REFRI</span>" : "<span>🌡️ AMBIENTE</span>";
 
-            // Limpia los números al final del nombre
+            // Elimina números al final del nombre 
             let nombreLimpio = med.n.replace(/\s\d+.*$/, '').trim();
 
             const div = document.createElement("div");
             div.className = "etiqueta";
             div.innerHTML = `
-                <div class="linea-nombre">${nombreLimpio}</div>
-                <div class="linea-dosis">📦 ${med.p}</div>
+                <div class="nombre">${nombreLimpio}</div>
+                <div class="dosis">📦 ${med.p}</div>
                 
-                <div class="bloque-fechas">
+                <div class="fechas">
                     <div class="fila-fecha">
                         <span class="txt-abierto">ABIERTO:</span>
                         <span>${fmt(hoy)}</span>
@@ -314,10 +301,9 @@
                     </div>
                 </div>
 
-                <div class="footer">
-                    <span class="lab">🏭 ${lab ? lab.toUpperCase() : ""}</span>
-                    <span class="alertas">${temp}${luz}</span>
-                </div>
+                ${lab ? `<div class="lab">🏭 ${lab.toUpperCase()}</div>` : ''}
+                
+                <div class="alertas">${temp}${luz}</div>
             `;
             document.getElementById("hoja").appendChild(div);
 
