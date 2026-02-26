@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etiquetas que NO se cortan</title>
+    <title>Etiquetas Perfectas (No se cortan)</title>
     <style>
         /* ESTILOS GENERALES */
         :root { --primary: #2c3e50; }
@@ -69,33 +69,34 @@
             page-break-inside: avoid;
         }
 
-        /* LA MAGIA PARA QUE NO SE CORTE NADA: white-space: normal y line-height apretado */
+        /* EL CANDADO MÁGICO: PROHÍBE QUE LAS CAJAS SE ENCOJAN A CERO */
+        .etiqueta > div {
+            flex-shrink: 0; 
+        }
+
         .linea-nombre {
             font-weight: 900;
-            font-size: 7.5pt; 
-            line-height: 0.9; /* Súper pegadito si baja de renglón */
+            font-size: 8pt;
             border-bottom: 1px solid #000;
-            padding-bottom: 1px;
             margin-bottom: 1px;
             text-align: center;
             text-transform: uppercase;
-            white-space: normal; 
-            word-wrap: break-word;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Si de milagro el nombre es larguísimo, le pone ... pero NO se desaparece */
         }
 
         .linea-dosis { 
             font-size: 5.5pt; 
-            line-height: 0.9;
             margin-bottom: 1px; 
-            text-align: center;
-            white-space: normal;
+            white-space: nowrap;
         }
 
         .bloque-fechas { 
             display: flex; 
             flex-direction: column; 
-            justify-content: center;
-            flex-grow: 1; /* Esto hace que ocupe el espacio central sin desbordar */
+            gap: 1px;
+            margin-bottom: auto; /* Empuja el footer hacia abajo si hay espacio extra */
         }
         
         .fila-fecha {
@@ -103,7 +104,6 @@
             justify-content: space-between;
             align-items: center;
             font-size: 6pt;
-            margin: 0.5px 0;
         }
 
         .txt-abierto { font-weight: bold; }
@@ -121,7 +121,7 @@
             padding-top: 1px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-end; /* Alinea el texto a la base */
             background: #f8f8f8;
         }
         
@@ -130,18 +130,18 @@
             font-size: 6.5pt;  
             text-transform: uppercase; 
             color: #000;
-            max-width: 45%; /* Evita que aplaste las alertas */
-            white-space: normal;
-            line-height: 0.85;
+            max-width: 50%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Para que quepa FARMADEXTRUM y no aplaste a las alertas */
         }
         
         .alertas { 
             font-weight: bold; 
             text-align: right; 
-            font-size: 4.5pt; /* Letra justa para que quepa "FOTOSENSIBLE" */
-            line-height: 0.9;
-            max-width: 55%;
-            white-space: normal;
+            font-size: 4.5pt; 
+            line-height: 1;
+            max-width: 50%;
         }
 
         @media print {
@@ -155,7 +155,7 @@
 <body>
 
     <div class="panel">
-        <h2 style="margin-top:0;">💊 Generador Vertical (Ajuste Perfecto)</h2>
+        <h2 style="margin-top:0;">💊 Generador Vertical (Cero Errores)</h2>
         
         <div class="fila-input">
             <label>Medicamento:</label>
@@ -165,7 +165,7 @@
 
         <div class="fila-input">
             <label>Laboratorio (Opcional):</label>
-            <input type="text" id="inp-lab" placeholder="Ej. PISA">
+            <input type="text" id="inp-lab" placeholder="Ej. FARMADEXTRUM">
         </div>
 
         <div class="botones">
@@ -173,9 +173,6 @@
             <button class="btn-cls" onclick="limpiar()">🗑️ BORRAR TODO</button>
             <button class="btn-prt" onclick="window.print()">🖨️ IMPRIMIR</button>
         </div>
-        <p style="font-size:12px; color:#666; text-align:center;">
-            * El texto ahora es "inteligente": Si es muy largo, bajará de renglón en lugar de desaparecer.
-        </p>
     </div>
 
     <div id="hoja"></div>
@@ -293,9 +290,11 @@
             const hoy = new Date();
             const cad = new Date(hoy.getTime() + (med.d * 86400000));
 
-            let luz = med.l === "SI" ? "🚫 FOTOSENSIBLE" : "";
-            let temp = med.t.includes("REFRI") ? "❄️ REFRI" : "🌡️ AMBIENTE";
+            // Divs separados para que se acomoden bien uno debajo de otro si es necesario
+            let luz = med.l === "SI" ? "<div>🚫 FOTOSENSIBLE</div>" : "";
+            let temp = med.t.includes("REFRI") ? "<div>❄️ REFRI</div>" : "<div>🌡️ AMBIENTE</div>";
 
+            // Limpia los números al final del nombre
             let nombreLimpio = med.n.replace(/\s\d+.*$/, '').trim();
 
             const div = document.createElement("div");
@@ -316,8 +315,8 @@
                 </div>
 
                 <div class="footer">
-                    <span class="lab">🏭 ${lab ? lab.toUpperCase() : "N/D"}</span>
-                    <span class="alertas">${temp} <br> ${luz}</span>
+                    <span class="lab">🏭 ${lab ? lab.toUpperCase() : ""}</span>
+                    <span class="alertas">${temp}${luz}</span>
                 </div>
             `;
             document.getElementById("hoja").appendChild(div);
