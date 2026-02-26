@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etiquetas Verticales (Lab Grande)</title>
+    <title>Etiquetas que NO se cortan</title>
     <style>
         /* ESTILOS GENERALES */
         :root { --primary: #2c3e50; }
@@ -41,16 +41,13 @@
         /* --- HOJA DE IMPRESIÓN (VERTICAL TIRA) --- */
         #hoja {
             background: white;
-            /* Ancho ajustado para una columna */
             width: auto; 
             min-height: 20cm;
             padding: 0.5cm;
-            
-            /* FORMATO VERTICAL */
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            gap: 2mm; /* Espacio entre etiquetas para meter tijera */
+            gap: 2mm; 
         }
 
         /* --- ETIQUETA --- */
@@ -64,36 +61,49 @@
             padding: 2px 3px;
             
             font-family: 'Arial Narrow', sans-serif;
-            font-size: 6pt; 
             color: #000;
             
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            overflow: hidden;
-            page-break-inside: avoid; /* No partir etiquetas */
+            page-break-inside: avoid;
         }
 
+        /* LA MAGIA PARA QUE NO SE CORTE NADA: white-space: normal y line-height apretado */
         .linea-nombre {
             font-weight: 900;
-            font-size: 8pt;
+            font-size: 7.5pt; 
+            line-height: 0.9; /* Súper pegadito si baja de renglón */
             border-bottom: 1px solid #000;
+            padding-bottom: 1px;
             margin-bottom: 1px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            text-align: center;
             text-transform: uppercase;
+            white-space: normal; 
+            word-wrap: break-word;
         }
 
-        .linea-dosis { font-size: 6pt; margin-bottom: 1px; }
+        .linea-dosis { 
+            font-size: 5.5pt; 
+            line-height: 0.9;
+            margin-bottom: 1px; 
+            text-align: center;
+            white-space: normal;
+        }
 
-        .bloque-fechas { display: flex; flex-direction: column; gap: 2px; }
+        .bloque-fechas { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center;
+            flex-grow: 1; /* Esto hace que ocupe el espacio central sin desbordar */
+        }
         
         .fila-fecha {
             display: flex;
             justify-content: space-between;
-            white-space: nowrap;
-            font-size: 6.5pt;
+            align-items: center;
+            font-size: 6pt;
+            margin: 0.5px 0;
         }
 
         .txt-abierto { font-weight: bold; }
@@ -106,29 +116,32 @@
             border-radius: 2px;
         }
 
-        /* FOOTER AJUSTADO */
         .footer {
             border-top: 1px dotted #999;
-            padding-top: 2px;
-            margin-top: 1px;
+            padding-top: 1px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: #f8f8f8;
         }
         
-        /* LABORATORIO MÁS GRANDE */
         .lab { 
-            font-weight: 900; /* Extra Negrita */
-            font-size: 7pt;   /* Letra más grande */
+            font-weight: 900; 
+            font-size: 6.5pt;  
             text-transform: uppercase; 
             color: #000;
+            max-width: 45%; /* Evita que aplaste las alertas */
+            white-space: normal;
+            line-height: 0.85;
         }
         
         .alertas { 
             font-weight: bold; 
             text-align: right; 
-            font-size: 5pt; /* Alertas un poco más chicas para dar espacio al Lab */
+            font-size: 4.5pt; /* Letra justa para que quepa "FOTOSENSIBLE" */
+            line-height: 0.9;
+            max-width: 55%;
+            white-space: normal;
         }
 
         @media print {
@@ -142,7 +155,7 @@
 <body>
 
     <div class="panel">
-        <h2 style="margin-top:0;">💊 Generador Vertical</h2>
+        <h2 style="margin-top:0;">💊 Generador Vertical (Ajuste Perfecto)</h2>
         
         <div class="fila-input">
             <label>Medicamento:</label>
@@ -161,7 +174,7 @@
             <button class="btn-prt" onclick="window.print()">🖨️ IMPRIMIR</button>
         </div>
         <p style="font-size:12px; color:#666; text-align:center;">
-            * Los números del nombre se eliminan automáticamente (Ej. AMIKACINA 500 -> AMIKACINA).
+            * El texto ahora es "inteligente": Si es muy largo, bajará de renglón en lugar de desaparecer.
         </p>
     </div>
 
@@ -197,7 +210,7 @@
             {n: "CLOROPIRAMINA", p: "20 MG /2 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
             {n: "COLISTIMETATO", p: "150 MG / 5 ML", d: 7, l: "SI", t: "REFRIGERESE"},
             {n: "DEXAMETASONA", p: "8 MG / 2ML", d: 7, l: "SI", t: "T. AMBIENTE"},
-            {n: "DEXAMETASONA DEPOT", p: "8 MG / 2ML", d: 1, l: "SI", t: "T. AMBIENTE"},
+            {n: "DEXAMETASONA D.", p: "8 MG / 2ML", d: 1, l: "SI", t: "T. AMBIENTE"},
             {n: "DEXMEDETOMIDINA", p: "200 MCG/2 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
             {n: "DICLOFENACO", p: "75 MG / 3 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
             {n: "DIFENHIDRAMINA", p: "100 MG / 10 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
@@ -222,7 +235,6 @@
             {n: "HIDROCORTISONA", p: "100 MG / 5 ML", d: 3, l: "NO", t: "T. AMBIENTE"},
             {n: "KETOROLACO", p: "30 MG / 1 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
             {n: "IBUPROFENO", p: "600 MG / 100 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
-            {n: "LEVOCARNITINA", p: "1000 MG / 5 ML", d: 4, l: "SI", t: "T. AMBIENTE"},
             {n: "LEVETIRACETAM", p: "500 MG / 5 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
             {n: "LEVOFLOXACINO", p: "500 MG / 100 ML", d: 7, l: "NO", t: "REFRI (72H T.AMB)"},
             {n: "LINEZOLID", p: "600 MG / 300 ML", d: 7, l: "SI", t: "REFRI O T.AMB"},
@@ -281,11 +293,9 @@
             const hoy = new Date();
             const cad = new Date(hoy.getTime() + (med.d * 86400000));
 
-            // Lógica
             let luz = med.l === "SI" ? "🚫 FOTOSENSIBLE" : "";
             let temp = med.t.includes("REFRI") ? "❄️ REFRI" : "🌡️ AMBIENTE";
 
-            // Limpieza de nombre (Quita números al final)
             let nombreLimpio = med.n.replace(/\s\d+.*$/, '').trim();
 
             const div = document.createElement("div");
@@ -306,8 +316,8 @@
                 </div>
 
                 <div class="footer">
-                    <span class="lab">🏭 ${lab ? lab.toUpperCase().substring(0,10) : ""}</span>
-                    <span class="alertas">${temp} ${luz}</span>
+                    <span class="lab">🏭 ${lab ? lab.toUpperCase() : "N/D"}</span>
+                    <span class="alertas">${temp} <br> ${luz}</span>
                 </div>
             `;
             document.getElementById("hoja").appendChild(div);
