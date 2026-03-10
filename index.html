@@ -142,7 +142,7 @@
 <body>
 
     <div class="panel">
-        <h2 style="margin-top:0;">💉 Etiquetas Exactas (5cc)</h2>
+        <h2 style="margin-top:0;">💉 ETIQUETAS SOBRANTE</h2>
         
         <div class="fila-input">
             <label>Medicamento:</label>
@@ -151,8 +151,8 @@
         </div>
 
         <div class="fila-input">
-            <label>Laboratorio (Opcional):</label>
-            <input type="text" id="inp-lab" placeholder="Ej. FARMADEXTRUM">
+            <label>Laboratorio :</label>
+            <input type="text" id="inp-lab" placeholder="Ej. PISA">
         </div>
 
         <div class="botones">
@@ -200,11 +200,23 @@
         function agregar() {
             const inpMed = document.getElementById("inp-med");
             const nom = inpMed.value;
-            const lab = document.getElementById("inp-lab").value;
+            // Usamos .trim() para evitar que te hagan trampa poniendo puros espacios
+            const lab = document.getElementById("inp-lab").value.trim(); 
             const med = meds.find(m => m.n === nom);
 
-            if(!med) { alert("⚠️ Elige un medicamento válido de la lista."); return; }
+            // CANDADO 1: Revisa que el medicamento exista
+            if(!med) { 
+                alert("Elige un medicamento válido de la lista."); 
+                return; 
+            }
 
+            // CANDADO 2: Revisa que el laboratorio no esté vacío (NUEVO)
+            if(lab === "") { 
+                alert("El campo de Laboratorio es obligatorio. Por favor escríbelo."); 
+                // Regresa el cursor al laboratorio para que lo escriban
+                document.getElementById("inp-lab").focus(); 
+                return; 
+            }
             const hoy = new Date();
             const cad = new Date(hoy.getTime() + (med.d * 86400000));
 
