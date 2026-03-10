@@ -156,9 +156,9 @@
         </div>
 
         <div class="botones">
-            <button class="btn-add" onclick="agregar()">➕ AGREGAR (Enter)</button>
-            <button class="btn-cls" onclick="limpiar()">🗑️ BORRAR TODO</button>
-            <button class="btn-prt" onclick="window.print()">🖨️ IMPRIMIR</button>
+            <button class="btn-add" onclick="agregar()">+ AGREGAR (Enter)</button>
+            <button class="btn-cls" onclick="limpiar()">X BORRAR TODO</button>
+            <button class="btn-prt" onclick="window.print()">IMPRIMIR</button>
         </div>
     </div>
 
@@ -209,7 +209,7 @@
             const cad = new Date(hoy.getTime() + (med.d * 86400000));
 
             let luz = med.l === "SI" ? "<span>🚫 FOTOSENSIBLE</span>" : "";
-            let temp = med.t.includes("REFRI") ? "<span>❄️ REFRI</span>" : "<span>🌡️ AMBIENTE</span>";
+            let temp = med.t.includes("REFRI") ? "<span>❄️ REFRI</span>" : "<span>TEMP. AMBIENTE</span>";
 
             let nombreLimpio = med.n.replace(/\s\d+.*$/, '').trim();
 
