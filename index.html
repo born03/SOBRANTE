@@ -53,20 +53,20 @@
         /* --- DISEÑO ANTI-CORTES (JERINGA 5CC) --- */
         .etiqueta {
             width: 4cm;
-            min-height: 2cm; /* LA CLAVE: Si necesita más espacio, crecerá, NUNCA ocultará datos */
+            min-height: 2cm; /* LA CLAVE: NUNCA ocultará datos */
             border: 1.5px solid #000;
             border-radius: 4px;
             background: white;
             box-sizing: border-box;
             padding: 2px 4px;
             
-            font-family: 'Arial Narrow', Arial, sans-serif; /* Letra comprimida */
+            font-family: 'Arial Narrow', Arial, sans-serif;
             color: #000;
             
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 1.5px; /* Espaciado uniforme */
+            gap: 1.5px;
             page-break-inside: avoid;
         }
 
@@ -117,7 +117,7 @@
             font-size: 7.5pt; /* LABORATORIO GRANDE */
             text-align: center;
             text-transform: uppercase;
-            border-top: 1px dotted #999; /* Separador visual */
+            border-top: 1px dotted #999;
             padding-top: 2px;
             line-height: 1;
         }
@@ -164,91 +164,22 @@
 
     <div id="hoja"></div>
 
-    <script>
-        const meds = [
-            {n: "AC. FOLINICO", p: "50 MG / 4 ML", d: 1, l: "SI", t: "REFRIGERESE"},
-            {n: "AC. FOLINICO 15", p: "15 MG / 5 ML", d: 1, l: "SI", t: "REFRIGERESE"},
-            {n: "AC. VALPROICO", p: "500 MG / 5 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
-            {n: "ACICLOVIR", p: "250 MG / 10 ML", d: 0.5, l: "SI", t: "T. AMBIENTE"},
-            {n: "ALBUMINA", p: "12.5 G / 50 ML", d: 1, l: "SI", t: "REFRIGERESE"},
-            {n: "ALBUMINA 20%", p: "10 G / 50 ML", d: 1, l: "SI", t: "REFRIGERESE"},
-            {n: "AMIKACINA 100", p: "100 MG / 2 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
-            {n: "AMIKACINA 500", p: "500 MG / 2 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
-            {n: "AMPICILINA 500", p: "500 MG / 5 ML", d: 0.5, l: "SI", t: "REFRIGERESE"},
-            {n: "ANFOTERICINA B C", p: "50 MG / 10 ML", d: 7, l: "SI", t: "REFRIGERESE"},
-            {n: "ANFOTERICINA B L", p: "50 MG / 10 ML", d: 2, l: "SI", t: "REFRIGERESE"},
-            {n: "BUMETANIDA", p: "0.5 MG / 2 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
-            {n: "BUPRENORFINA", p: "300 MCG/ 1 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
-            {n: "BUTILHIOSCINA", p: "20 MG / 1 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
-            {n: "CAFEINA CITRATO", p: "20 MG / ML", d: 1, l: "NO", t: "T. AMBIENTE"},
-            {n: "CASPOFUNGINA", p: "50 MG / 10 ML", d: 2, l: "SI", t: "REFRIGERESE"},
-            {n: "CEFALOTINA", p: "1G /10 ML", d: 2, l: "SI", t: "REFRIGERESE"},
-            {n: "CEFEPIMA", p: "1G /10 ML", d: 7, l: "SI", t: "REFRIGERESE"},
-            {n: "CEFOTAXIMA", p: "1G /4 ML", d: 7, l: "SI", t: "REFRIGERESE"},
-            {n: "CEFTAZIDIMA", p: "1G /10 ML", d: 7, l: "SI", t: "REFRIGERESE"},
-            {n: "CEFTRIAXONA", p: "1G /10 ML", d: 3, l: "SI", t: "REFRIGERESE"},
-            {n: "CEFUROXIMA", p: "750 MG / 5 ML", d: 2, l: "SI", t: "REFRIGERESE"},
-            {n: "CIPROFLOXACINO", p: "200 MG / 100 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
-            {n: "CLARITROMICINA", p: "500 MG / 10 ML", d: 2, l: "SI", t: "REFRIGERESE"},
-            {n: "CLINDAMICINA", p: "300 MG / 2 ML", d: 2, l: "NO", t: "T. AMBIENTE"},
-            {n: "CLOROPIRAMINA", p: "20 MG /2 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
-            {n: "COLISTIMETATO", p: "150 MG / 5 ML", d: 7, l: "SI", t: "REFRIGERESE"},
-            {n: "DEXAMETASONA", p: "8 MG / 2ML", d: 7, l: "SI", t: "T. AMBIENTE"},
-            {n: "DEXAMETASONA D.", p: "8 MG / 2ML", d: 1, l: "SI", t: "T. AMBIENTE"},
-            {n: "DEXMEDETOMIDINA", p: "200 MCG/2 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
-            {n: "DICLOFENACO", p: "75 MG / 3 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
-            {n: "DIFENHIDRAMINA", p: "100 MG / 10 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
-            {n: "DIFENIDOL", p: "40 MG /2 ML", d: 2, l: "SI", t: "T. AMBIENTE"},
-            {n: "ENOXAPARINA", p: "40 MG / 0.4 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
-            {n: "ERITROPOYETINA 2K", p: "4000 U / 1ML", d: 1, l: "NO", t: "REFRIGERESE"},
-            {n: "ERITROPOYETINA 4K", p: "4000 U / 1ML", d: 1, l: "NO", t: "REFRIGERESE"},
-            {n: "ETAMSILATO", p: "250 MG /2 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
-            {n: "FENITOINA", p: "250 MG / 5 ML", d: 7, l: "SI", t: "T. AMBIENTE"},
-            {n: "FILGRASTIM", p: "300 MCG / 1 ML", d: 1, l: "SI", t: "REFRIGERESE"},
-            {n: "FITOMENADIONA", p: "10 MG / 1 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
-            {n: "FLUCONAZOL", p: "100 MG / 50 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
-            {n: "FOSAPREPITANT", p: "150 MG / 5 ML", d: 1, l: "NO", t: "REFRIGERESE"},
-            {n: "FOSFOMICINA", p: "1G / 10 ML", d: 7, l: "SI", t: "REFRIGERESE"},
-            {n: "FUROSEMIDA", p: "20 MG / 2 ML", d: 5, l: "SI", t: "T. AMBIENTE"},
-            {n: "GANCICLOVIR", p: "500 MG / 10 ML", d: 0.5, l: "SI", t: "T. AMBIENTE"},
-            {n: "GENTAMICINA 160", p: "160 MG / 2 ML", d: 5, l: "NO", t: "T. AMBIENTE"},
-            {n: "GENTAMICINA 20", p: "20 MG / 2 ML", d: 5, l: "NO", t: "T. AMBIENTE"},
-            {n: "GENTAMICINA 80", p: "80 MG / 2 ML", d: 5, l: "NO", t: "T. AMBIENTE"},
-            {n: "HEPARINA", p: "1000 UI / ML", d: 7, l: "NO", t: "REFRIGERESE"},
-            {n: "HIDRALAZINA", p: "20 MG / 1 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
-            {n: "HIDROCORTISONA", p: "100 MG / 5 ML", d: 3, l: "NO", t: "T. AMBIENTE"},
-            {n: "KETOROLACO", p: "30 MG / 1 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
-            {n: "IBUPROFENO", p: "600 MG / 100 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
-            {n: "LEVETIRACETAM", p: "500 MG / 5 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
-            {n: "LEVOFLOXACINO", p: "500 MG / 100 ML", d: 7, l: "NO", t: "REFRI (72H T.AMB)"},
-            {n: "LINEZOLID", p: "600 MG / 300 ML", d: 7, l: "SI", t: "REFRI O T.AMB"},
-            {n: "MEROPENEM", p: "1 G / 20 ML", d: 2, l: "SI", t: "REFRIGERESE"},
-            {n: "METAMIZOL", p: "1 G / 2 ML", d: 1, l: "SI", t: "T. AMBIENTE"},
-            {n: "METILPREDNISOLONA", p: "500 MG / 10 ML", d: 2, l: "SI", t: "REFRIGERESE"},
-            {n: "METILPRED. 1PULSO", p: "500 MG / 10 ML", d: 2, l: "SI", t: "REFRIGERESE"},
-            {n: "METOCLOPRAMIDA", p: "10 MG / 2 ML", d: 5, l: "SI", t: "T. AMBIENTE"},
-            {n: "METRONIDAZOL", p: "500 MG / 100 ML", d: 5, l: "NO", t: "T. AMBIENTE"},
-            {n: "METRONIDAZOL 200", p: "200 MG / 10 ML", d: 5, l: "SI", t: "T. AMBIENTE"},
-            {n: "OCTREOTIDA", p: "1 MG / 5 ML", d: 4, l: "SI", t: "REFRIGERESE"},
-            {n: "OMEPRAZOL", p: "40 MG / 10 ML", d: 0.166, l: "SI", t: "VER ANEXO"},
-            {n: "ONDANSETRON", p: "8 MG / 4 ML", d: 7, l: "SI", t: "T. AMBIENTE"},
-            {n: "PARACETAMOL", p: "1G / 100 ML", d: 7, l: "NO", t: "T. AMBIENTE"},
-            {n: "PIPERACILINA", p: "4 G / 20 ML", d: 2, l: "NO", t: "REFRIGERESE"},
-            {n: "TEICOPLANINA", p: "200 MG / 5 ML", d: 7, l: "NO", t: "REFRIGERESE"},
-            {n: "TIAMINA", p: "500 MG/ 5 ML", d: 1, l: "SI", t: "REFRIGERESE"},
-            {n: "TIGECICLINA", p: "50 MG / 5 ML", d: 2, l: "SI", t: "REFRIGERESE"},
-            {n: "TRAMADOL", p: "100 MG / 2 ML", d: 1, l: "NO", t: "T. AMBIENTE"},
-            {n: "TRIMETOPRIM", p: "160 MG / 3 ML", d: 3, l: "SI", t: "T. AMBIENTE"},
-            {n: "VANCOMICINA", p: "500 MG / 10 ML", d: 7, l: "SI", t: "REFRIGERESE"},
-            {n: "VORICONAZOL", p: "200 MG / 20 ML", d: 1, l: "SI", t: "REFRIGERESE"}
-        ];
+    <script src="datos.js"></script>
 
-        const dl = document.getElementById("listado");
-        meds.forEach(m => {
-            const op = document.createElement("option");
-            op.value = m.n;
-            dl.appendChild(op);
-        });
+    <script>
+        // Cargar los medicamentos desde datos.js
+        window.onload = function() {
+            const dl = document.getElementById("listado");
+            if(typeof meds !== 'undefined') {
+                meds.forEach(m => {
+                    const op = document.createElement("option");
+                    op.value = m.n;
+                    dl.appendChild(op);
+                });
+            } else {
+                alert("⚠️ Error: No se pudo cargar datos.js. Asegúrate de haberlo creado correctamente en GitHub.");
+            }
+        };
 
         document.getElementById("inp-med").addEventListener("keydown", function(event) {
             if (event.key === "Enter") { event.preventDefault(); agregar(); }
@@ -272,16 +203,14 @@
             const lab = document.getElementById("inp-lab").value;
             const med = meds.find(m => m.n === nom);
 
-            if(!med) { alert("⚠️ Elige un medicamento válido."); return; }
+            if(!med) { alert("⚠️ Elige un medicamento válido de la lista."); return; }
 
             const hoy = new Date();
             const cad = new Date(hoy.getTime() + (med.d * 86400000));
 
-            // Mantiene el texto que solicitaste
             let luz = med.l === "SI" ? "<span>🚫 FOTOSENSIBLE</span>" : "";
             let temp = med.t.includes("REFRI") ? "<span>❄️ REFRI</span>" : "<span>🌡️ AMBIENTE</span>";
 
-            // Elimina números al final del nombre 
             let nombreLimpio = med.n.replace(/\s\d+.*$/, '').trim();
 
             const div = document.createElement("div");
